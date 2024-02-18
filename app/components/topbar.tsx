@@ -2,14 +2,15 @@ import { Form, Link } from "@remix-run/react";
 import Logo from "./logo";
 import { ExitIcon } from "@radix-ui/react-icons";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import DatasetSelect from "./dataset.select";
+// import DatasetSelect from "./dataset.select";
+import DatasetTabs from "./dataset.tabs";
 
 const NavBar = () => {
   return (
     <div className="border dark:border-neutral-700 sticky top-0 left-0 right-0 z-50">
-      <div className="container mx-auto flex justify-between gap-4">
-        <div className="flex">
-          <div className="border-r dark:border-neutral-700 w-[77px]">
+      <div className="container mx-auto flex justify-between">
+        <div className="flex flex-grow min-w-0">
+          <div className="border-r dark:border-neutral-700 min-w-[77px]">
             <Link
               to="/"
               className="hover:dark:bg-neutral-800 hover:bg-neutral-50 transition-colors duration-200 ease-in-out w-full h-full grid place-content-center"
@@ -17,7 +18,9 @@ const NavBar = () => {
               <Logo height={30} width={30} />
             </Link>
           </div>
-          <DatasetSelect />
+          <div className="flex-auto min-w-0 overflow-hidden">
+            <DatasetTabs />
+          </div>
         </div>
 
         <Form
