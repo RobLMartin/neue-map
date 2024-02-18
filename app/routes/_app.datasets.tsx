@@ -28,49 +28,52 @@ export default function DatasetsPage() {
 
   return (
     <div>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+      <table className="min-w-full divide-y divide-neutral-200">
+        <thead className="sticky top-0 left-0 dark:bg-neutral-800 bg-neutral-100">
           <tr>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-4 text-left text-xs font-medium text-neutral-400 uppercase tracking-wider border-b border-r last:border-r-0 dark:border-neutral-700"
             >
               ID
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-4 text-left text-xs font-medium text-neutral-400 uppercase tracking-wider border-b border-r last:border-r-0 dark:border-neutral-700"
             >
               Name
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-4 text-left text-xs font-medium text-neutral-400 uppercase tracking-wider border-b border-r last:border-r-0 dark:border-neutral-700"
             >
               Created At
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-4 text-left text-xs font-medium text-neutral-400 uppercase tracking-wider border-b border-r last:border-r-0 dark:border-neutral-700"
             >
               View
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="">
           {datasets.map((dataset: any) => (
-            <tr key={dataset.id}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <tr
+              key={dataset.id}
+              className="dark:hover:bg-neutral-800 hover:bg-neutral-100 transition-all ease-in-out duration-100"
+            >
+              <td className="px-6 py-4 whitespace-nowrap text-md border-r border-b last:border-r-0  dark:border-neutral-700">
                 {dataset.id}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td className="px-6 py-4 whitespace-nowrap text-md border-r border-b last:border-r-0  dark:border-neutral-700">
                 {dataset.name}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {dataset.createdAt}
+              <td className="px-6 py-4 whitespace-nowrap text-md border-r border-b last:border-r-0  dark:border-neutral-700">
+                {new Date(dataset.createdAt).toLocaleString()}
               </td>
 
-              <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium cursor-pointer">
+              <td className="px-6 py-4 whitespace-nowrap text-md border-r border-b last:border-r-0  dark:border-neutral-700 cursor-pointer">
                 <div
                   onClick={() =>
                     handleClick({ label: dataset.name, value: dataset.id })
