@@ -23,31 +23,31 @@ export default function useMap() {
   );
   mapboxgl.accessToken = Mapbox_key;
 
-  useEffect(() => {
-    moveToRandomPoint(dataset.data);
-  }, [dataset]);
+  // useEffect(() => {
+  //   moveToRandomPoint(dataset.data);
+  // }, [dataset]);
 
-  const moveToRandomPoint = (geoJsonData) => {
-    if (!geoJsonData || !geoJsonData.features || !geoJsonData.features.length) {
-      return;
-    }
+  // const moveToRandomPoint = (geoJsonData) => {
+  //   if (!geoJsonData || !geoJsonData.features || !geoJsonData.features.length) {
+  //     return;
+  //   }
 
-    // Pick a random feature from the GeoJSON data
-    const randomFeature =
-      geoJsonData.features[
-        Math.floor(Math.random() * geoJsonData.features.length)
-      ];
-    const coordinates = randomFeature.geometry.coordinates;
+  //   // Pick a random feature from the GeoJSON data
+  //   const randomFeature =
+  //     geoJsonData.features[
+  //       Math.floor(Math.random() * geoJsonData.features.length)
+  //     ];
+  //   const coordinates = randomFeature.geometry.coordinates;
 
-    // Ensure the map instance is available
-    if (map.current) {
-      map.current.flyTo({
-        center: coordinates,
-        zoom: default_zoom + 2,
-        essential: true, // This ensures the map movement is smooth
-      });
-    }
-  };
+  //   // Ensure the map instance is available
+  //   if (map.current) {
+  //     map.current.flyTo({
+  //       center: coordinates,
+  //       zoom: default_zoom + 2,
+  //       essential: true, // This ensures the map movement is smooth
+  //     });
+  //   }
+  // };
 
   /**
    * This handles subscribing and unsubscribing from the load event. Basically initializing mapbox.
