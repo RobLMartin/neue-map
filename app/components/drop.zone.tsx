@@ -81,7 +81,7 @@ const DropZone = () => {
       style={{ pointerEvents: "none" }} // Prevent the drop zone from capturing mouse events when visible.
     >
       <div
-        className="p-5 rounded-lg"
+        className="p-16 rounded dark:bg-neutral-900 bg-white shadow-lg"
         style={{ pointerEvents: "auto" }} // Allow mouse events on the inner div to let the user drop the file.
       >
         <p>Drop your GeoJSON file here</p>
