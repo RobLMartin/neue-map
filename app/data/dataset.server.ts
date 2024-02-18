@@ -16,13 +16,12 @@ export async function getDatasetById(id: string) {
   }
 }
 
-export async function getDatasets(): Promise<Partial<Dataset>[]> {
+export async function getDatasets(
+  select: Partial<Record<keyof Dataset, boolean>>
+): Promise<Partial<Dataset>[]> {
   try {
     const dataset = await db.dataset.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
+      select,
     });
     console.log("Datasets:", dataset);
     return dataset;
