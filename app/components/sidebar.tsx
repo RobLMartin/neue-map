@@ -3,6 +3,7 @@ import NavItem from "./nav.item";
 import {
   BarChartIcon,
   // UploadIcon,
+  FileTextIcon,
   MagnifyingGlassIcon,
   GlobeIcon,
 } from "@radix-ui/react-icons";
@@ -11,6 +12,11 @@ export default function Sidebar() {
   return (
     <div className="h-[calc(100vh-71px)]">
       <div className="flex-grow flex flex-col justify-end items-center">
+        <NavItem
+          to={`/datasets`}
+          icon={<FileTextIcon height={28} width={28} />}
+          title="Datasets"
+        />
         <NavItem
           to={`/${datasetId}/search`}
           icon={<MagnifyingGlassIcon height={28} width={28} />}
@@ -26,6 +32,7 @@ export default function Sidebar() {
           icon={<BarChartIcon height={28} width={28} />}
           title="Charts"
         />
+
         {/* <NavItem
           to="/upload"
           icon={<UploadIcon height={28} width={28} />}
