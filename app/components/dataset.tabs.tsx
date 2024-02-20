@@ -1,26 +1,24 @@
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { useFetcher, Link, useLocation, useParams } from "@remix-run/react";
+import { useFetcher, Link, useParams, useLoaderData } from "@remix-run/react";
 import { useEffect, useState, useRef } from "react";
-import useLocalStorageOptions from "~/hooks/useLocalStorageOptions";
 
 type Option = { value: number; label: string };
 
 const DatasetTabs = () => {
-  const location = useLocation();
   const { datasetId } = useParams();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingName, setEditingName] = useState("");
   const editInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const datasetFetcher = useFetcher();
   const editNameFetcher = useFetcher();
-  const { options, addOption, removeOption } =
-    useLocalStorageOptions("datasetOptions");
+  const tabFetcher = useFetcher();
+  const { options } = useLoaderData<any>();
 
   useEffect(() => {
     if (datasetFetcher.state === "idle" && !datasetFetcher.data) {
       datasetFetcher.load("/dataset/find");
     }
-  }, [datasetFetcher, datasetId, addOption]);
+  }, [datasetFetcher, datasetId]);
 
   useEffect(() => {
     if (editingIndex !== null) {
@@ -33,7 +31,10 @@ const DatasetTabs = () => {
   };
 
   const handleRemoveOption = (value: number) => {
-    removeOption(value);
+    tabFetcher.submit(
+      { id: value, intent: "delete" },
+      { method: "post", action: "/" }
+    );
   };
 
   const handleEditConfirm = (e: any, index: number, option: Option) => {
@@ -74,12 +75,10 @@ const DatasetTabs = () => {
     // Implement the logic to update the option in your state or data source
   };
 
-  const pathSuffix = location.pathname.split("/").slice(2).join("/");
-
   return (
     <div className="w-full h-full overflow-auto">
       <div className="flex whitespace-nowrap h-full">
-        {options.map((option, index) => (
+        {options.map((option: any, index: number) => (
           <div
             key={option.value}
             className="flex-none flex items-center border-r dark:border-neutral-700 gap-2 pr-2"
@@ -97,7 +96,7 @@ const DatasetTabs = () => {
             ) : (
               <>
                 <Link
-                  to={`/${option.value}/${pathSuffix}`}
+                  to={`/datasets/${option.value}`}
                   className="flex-1 cursor-pointer p-5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors duration-200 ease-in-out"
                 >
                   <span

@@ -23,7 +23,6 @@ export async function getDatasets(
     const dataset = await db.dataset.findMany({
       select,
     });
-    console.log("Datasets:", dataset);
     return dataset;
   } catch (error: any) {
     console.error("Error fetching dataset:", error);
@@ -57,9 +56,9 @@ export async function createDataset(dataString: string) {
         name: createdAt.toISOString(),
       },
     });
-    console.log("Dataset created:", dataset.id);
     const id = dataset.id;
-    return new Response(JSON.stringify({ datasetId: id.toString() }), {
+    const name = dataset.name;
+    return new Response(JSON.stringify({ id: id.toString(), name }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

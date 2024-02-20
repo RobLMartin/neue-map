@@ -1,21 +1,31 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useFetcher, useNavigate } from "@remix-run/react";
+import type { Dataset } from "@prisma/client";
 
-type FetcherData = {
-  datasetId?: string;
-};
 const DropZone = () => {
   const fetcher = useFetcher();
+  const tabFetcher = useFetcher();
   const [isDragging, setIsDragging] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data !== undefined) {
-      const data = fetcher.data as FetcherData;
-      if (data.datasetId) {
-        navigate(`/${data.datasetId}`);
+    if (
+      fetcher.state === "idle" &&
+      fetcher.data !== undefined &&
+      tabFetcher.data === undefined
+    ) {
+      const data = fetcher.data as Partial<Dataset>;
+      if (data.id) {
+        const formData = new FormData();
+        formData.append("tab", JSON.stringify(data));
+        tabFetcher.submit(formData, {
+          method: "post",
+          action: "/",
+          navigate: false,
+        });
+        navigate(`/datasets/${data.id}`);
       }
     }
-  }, [fetcher, navigate]);
+  }, [fetcher, navigate, tabFetcher]);
 
   useEffect(() => {
     const handleDragEnter = (e: DragEvent) => {

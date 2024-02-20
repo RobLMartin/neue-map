@@ -1,7 +1,9 @@
 import { useNavigate, useRouteLoaderData, useParams } from "@remix-run/react";
 
 export default function DataTable() {
-  const { dataset } = useRouteLoaderData<any>("routes/_app.$datasetId");
+  const { dataset } = useRouteLoaderData<any>(
+    "routes/_app.datasets.$datasetId"
+  );
   const { datasetId } = useParams();
   const navigate = useNavigate();
   if (!dataset?.data) {

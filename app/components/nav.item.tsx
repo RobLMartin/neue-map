@@ -17,14 +17,7 @@ const NavItem = ({
           asChild
           className="flex justify-center w-full p-6 hover:dark:bg-neutral-800 hover:bg-neutral-100 transition-colors duration-200 ease-in-out"
         >
-          <NavLink
-            to={to}
-            className={({ isActive }: { isActive: boolean }) =>
-              isActive ? "underline tracking-wider" : "tracking-wider"
-            }
-          >
-            {icon}
-          </NavLink>
+          <NavLink to={to}>{icon}</NavLink>
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content

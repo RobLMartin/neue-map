@@ -18,17 +18,17 @@ export default function Sidebar() {
           title="Datasets"
         />
         <NavItem
-          to={`/${datasetId}/search`}
+          to={`/datasets/${datasetId}/search`}
           icon={<MagnifyingGlassIcon height={28} width={28} />}
           title="Search"
         />
         <NavItem
-          to={`/${datasetId}`}
+          to={`/datasets/${datasetId}`}
           icon={<GlobeIcon height={28} width={28} />}
           title="Map"
         />
         <NavItem
-          to={`/${datasetId}/charts`}
+          to={`/datasets/${datasetId}/charts`}
           icon={<BarChartIcon height={28} width={28} />}
           title="Charts"
         />

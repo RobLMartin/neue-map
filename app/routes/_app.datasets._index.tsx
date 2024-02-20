@@ -1,6 +1,6 @@
 import { getDatasets } from "~/data/dataset.server";
-import { useLoaderData, useNavigate } from "@remix-run/react";
-import useLocalStorageOptions from "~/hooks/useLocalStorageOptions";
+import { useLoaderData, useNavigate, useFetcher } from "@remix-run/react";
+import type { Dataset } from "@prisma/client";
 
 export const loader = async () => {
   const datasets = await getDatasets({
@@ -13,17 +13,21 @@ export const loader = async () => {
 
 export default function DatasetsPage() {
   const datasets = useLoaderData<typeof loader>();
-  const { options, addOption } = useLocalStorageOptions("datasetOptions");
+  const createTabFetcher = useFetcher();
   const navigate = useNavigate();
-  const handleClick = (option: { label: string; value: number }) => {
-    const isOptionAlreadyAdded = options.some(
-      (opt) => opt.value === option.value
-    );
 
-    if (!isOptionAlreadyAdded) {
-      addOption(option);
-    }
-    navigate(`/${option.value}`);
+  const handleClickViewDataset = (dataset: Partial<Dataset>) => {
+    const { id, name } = dataset;
+    const formData = new FormData();
+    formData.append("tab", JSON.stringify({ id, name, intent: "create-tab" }));
+
+    createTabFetcher.submit(formData, {
+      method: "post",
+      action: "/",
+      navigate: false,
+    });
+
+    navigate(`/datasets/${id}`);
   };
 
   return (
@@ -76,9 +80,12 @@ export default function DatasetsPage() {
               <td className="px-6 py-4 whitespace-nowrap text-md border-r border-b last:border-r-0  dark:border-neutral-700 cursor-pointer">
                 <div
                   onClick={() =>
-                    handleClick({ label: dataset.name, value: dataset.id })
+                    handleClickViewDataset({
+                      name: dataset.name,
+                      id: dataset.id,
+                    })
                   }
-                  className="text-indigo-600 hover:text-indigo-900"
+                  className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 font-semibold"
                 >
                   View
                 </div>

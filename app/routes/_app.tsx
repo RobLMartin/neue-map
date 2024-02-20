@@ -1,6 +1,12 @@
 import { Outlet } from "@remix-run/react";
 import Topbar from "~/components/topbar";
 import Sidebar from "~/components/sidebar";
+import { fetchOptions } from "~/utils/tab.storage";
+
+export const clientLoader = async () => {
+  const options = fetchOptions();
+  return { options };
+};
 
 export default function App() {
   return (

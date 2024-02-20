@@ -16,15 +16,14 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticator.isAuthenticated(request, {
-    successRedirect: "/dashboard",
-  });
+  // await authenticator.isAuthenticated(request, {
+  //   successRedirect: "/dashboard",
+  // });
 
   return 200;
 };
 
 export async function action({ context, request }: ActionFunctionArgs) {
-  console.log("hey");
   return await authenticator.authenticate("form", request, {
     successRedirect: "/dashboard",
     failureRedirect: "/",
