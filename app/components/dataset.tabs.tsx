@@ -2,7 +2,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 import { useFetcher, Link, useParams, useLoaderData } from "@remix-run/react";
 import { useEffect, useState, useRef } from "react";
 
-type Option = { value: number; label: string };
+type Tab = { value: number; label: string };
 
 const DatasetTabs = () => {
   const { datasetId } = useParams();
@@ -11,8 +11,9 @@ const DatasetTabs = () => {
   const editInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const datasetFetcher = useFetcher();
   const editNameFetcher = useFetcher();
+  const editTabFetcher = useFetcher();
   const tabFetcher = useFetcher();
-  const { options } = useLoaderData<any>();
+  const { tabs } = useLoaderData<any>();
 
   useEffect(() => {
     if (datasetFetcher.state === "idle" && !datasetFetcher.data) {
@@ -30,21 +31,21 @@ const DatasetTabs = () => {
     setEditingName(e.target.value);
   };
 
-  const handleRemoveOption = (value: number) => {
+  const handleRemoveTab = (value: number) => {
     tabFetcher.submit(
-      { id: value, intent: "delete" },
+      { id: value, intent: "delete-tab" },
       { method: "post", action: "/" }
     );
   };
 
-  const handleEditConfirm = (e: any, index: number, option: Option) => {
+  const handleEditConfirm = (e: any, index: number, tab: Tab) => {
     if (e.key === "Enter") {
-      const updatedOption = { ...option, label: editingName };
-      updateOption(index, updatedOption);
+      const updatedTab = { ...tab, label: editingName };
+      updateTab(index, updatedTab);
       setEditingIndex(null);
 
       const formData = new FormData();
-      formData.append("id", option.value.toString());
+      formData.append("id", tab.value.toString());
       formData.append("name", editingName);
 
       editNameFetcher.submit(formData, {
@@ -52,16 +53,20 @@ const DatasetTabs = () => {
         action: "/dataset/edit",
         navigate: false,
       });
+      editTabFetcher.submit(
+        { id: tab.value, name: editingName, intent: "update-tab" },
+        { method: "post", action: "/" }
+      );
     }
   };
 
-  const handleEditConfirmOnBlur = (index: number, option: Option) => {
-    const updatedOption = { ...option, label: editingName };
-    updateOption(index, updatedOption);
+  const handleEditConfirmOnBlur = (index: number, tab: Tab) => {
+    const updatedTab = { ...tab, label: editingName };
+    updateTab(index, updatedTab);
     setEditingIndex(null);
 
     const formData = new FormData();
-    formData.append("id", option.value.toString());
+    formData.append("id", tab.value.toString());
     formData.append("name", editingName);
 
     editNameFetcher.submit(formData, {
@@ -69,19 +74,23 @@ const DatasetTabs = () => {
       action: "/dataset/edit",
       navigate: false,
     });
+    editTabFetcher.submit(
+      { id: tab.value, name: editingName, intent: "update-tab" },
+      { method: "post", action: "/" }
+    );
   };
 
-  const updateOption = (index: number, updatedOption: Option) => {
+  const updateTab = (index: number, updatedTab: Tab) => {
     // Implement the logic to update the option in your state or data source
   };
 
   return (
     <div className="w-full h-full overflow-auto">
       <div className="flex whitespace-nowrap h-full">
-        {options.map((option: any, index: number) => (
+        {tabs.map((tab: any, index: number) => (
           <div
-            key={option.value}
-            className="flex-none flex items-center border-r dark:border-neutral-700 gap-2 pr-2"
+            key={tab.value}
+            className="flex-none flex items-center border-r dark:border-neutral-700 gap-2 px-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors duration-200 ease-in-out"
           >
             {editingIndex === index ? (
               <input
@@ -89,29 +98,29 @@ const DatasetTabs = () => {
                 type="text"
                 value={editingName}
                 onChange={handleEditChange}
-                onKeyPress={(e) => handleEditConfirm(e, index, option)}
-                onBlur={() => handleEditConfirmOnBlur(index, option)}
-                className="text-left p-4 w-full border rounded"
+                onKeyPress={(e) => handleEditConfirm(e, index, tab)}
+                onBlur={() => handleEditConfirmOnBlur(index, tab)}
+                className="text-left p-2 w-full dark:bg-neutral-700 bg-neutral-200 border-none focus:ring-0 focus:outline-none rounded"
               />
             ) : (
               <>
                 <Link
-                  to={`/datasets/${option.value}`}
-                  className="flex-1 cursor-pointer p-5 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors duration-200 ease-in-out"
+                  to={`/datasets/${tab.value}`}
+                  className="flex-1 cursor-pointer p-5"
                 >
                   <span
                     onClick={(e) => {
                       e.preventDefault(); // Prevent link navigation
                       setEditingIndex(index);
-                      setEditingName(option.label);
+                      setEditingName(tab.label);
                     }}
                     className="cursor-pointer p-1 hover:bg-neutral-300 dark:hover:bg-neutral-900 transition-colors duration-200 ease-in-out rounded"
                   >
-                    {option.label}
+                    {tab.label}
                   </span>
                 </Link>
                 <button
-                  onClick={() => handleRemoveOption(option.value)}
+                  onClick={() => handleRemoveTab(tab.value)}
                   className="p-2"
                 >
                   <Cross2Icon />
