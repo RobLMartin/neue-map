@@ -1,6 +1,7 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction } from "@remix-run/node";
 import {
+  type ClientActionFunctionArgs,
   Links,
   LiveReload,
   Meta,
@@ -10,11 +11,34 @@ import {
 } from "@remix-run/react";
 import stylesheet from "tailwind.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { addTab, removeTabById, updateTabLabel } from "~/utils/tab.storage";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: stylesheet },
 ];
+
+export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
+  const formData = await request.formData();
+  const intent = formData.get("intent") as string;
+
+  if (intent === "delete-tab") {
+    const removeId = formData.get("id") as string;
+    removeTabById(removeId);
+  } else if (intent === "create-tab") {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+
+    addTab({ value: id!, label: name! });
+  } else if (intent === "update-tab") {
+    console.log("update-tab");
+    const id = formData.get("id") as string;
+    const newLabel = formData.get("name") as string;
+    updateTabLabel(id, newLabel);
+  }
+
+  return null;
+};
 
 export default function App() {
   return (

@@ -206,7 +206,7 @@ const DatasetSelect = () => {
             <Link
               to={`/${option.value}/${pathSuffix}`}
               key={option.value}
-              className="py-6 px-9 inline-block text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer w-full text-left border-b border-neutral-700"
+              className="py-6 px-9 inline-block text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer w-full text-left border-b dark:border-neutral-700"
               onClick={() => handleOptionClick(option)}
             >
               {option.label}

@@ -13,7 +13,7 @@ export default function useMap() {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const { Mapbox_key } = useLoaderData();
-  const { dataset } = useRouteLoaderData("routes/_app.$datasetId");
+  const { dataset } = useRouteLoaderData("routes/_app.datasets.$datasetId");
 
   const geoJson = dataset.data;
   const [isDarkMode, setIsDarkMode] = useState(
@@ -23,31 +23,31 @@ export default function useMap() {
   );
   mapboxgl.accessToken = Mapbox_key;
 
-  useEffect(() => {
-    moveToRandomPoint(dataset.data);
-  }, [dataset]);
+  // useEffect(() => {
+  //   moveToRandomPoint(dataset.data);
+  // }, [dataset]);
 
-  const moveToRandomPoint = (geoJsonData) => {
-    if (!geoJsonData || !geoJsonData.features || !geoJsonData.features.length) {
-      return;
-    }
+  // const moveToRandomPoint = (geoJsonData) => {
+  //   if (!geoJsonData || !geoJsonData.features || !geoJsonData.features.length) {
+  //     return;
+  //   }
 
-    // Pick a random feature from the GeoJSON data
-    const randomFeature =
-      geoJsonData.features[
-        Math.floor(Math.random() * geoJsonData.features.length)
-      ];
-    const coordinates = randomFeature.geometry.coordinates;
+  //   // Pick a random feature from the GeoJSON data
+  //   const randomFeature =
+  //     geoJsonData.features[
+  //       Math.floor(Math.random() * geoJsonData.features.length)
+  //     ];
+  //   const coordinates = randomFeature.geometry.coordinates;
 
-    // Ensure the map instance is available
-    if (map.current) {
-      map.current.flyTo({
-        center: coordinates,
-        zoom: default_zoom + 2,
-        essential: true, // This ensures the map movement is smooth
-      });
-    }
-  };
+  //   // Ensure the map instance is available
+  //   if (map.current) {
+  //     map.current.flyTo({
+  //       center: coordinates,
+  //       zoom: default_zoom + 2,
+  //       essential: true, // This ensures the map movement is smooth
+  //     });
+  //   }
+  // };
 
   /**
    * This handles subscribing and unsubscribing from the load event. Basically initializing mapbox.
@@ -138,6 +138,64 @@ export default function useMap() {
         "circle-stroke-width": 1,
         "circle-stroke-color": "#fff",
       },
+    });
+
+    // At low zooms, complete a revolution every two minutes.
+    const secondsPerRevolution = 120;
+    // Above zoom level 5, do not rotate.
+    const maxSpinZoom = 5;
+    // Rotate at intermediate speeds between zoom levels 3 and 5.
+    const slowSpinZoom = 3;
+
+    let userInteracting = false;
+    let spinEnabled = true;
+
+    function spinGlobe() {
+      const zoom = map.current.getZoom();
+      if (spinEnabled && !userInteracting && zoom < maxSpinZoom) {
+        let distancePerSecond = 360 / secondsPerRevolution;
+        if (zoom > slowSpinZoom) {
+          // Slow spinning at higher zooms
+          const zoomDif = (maxSpinZoom - zoom) / (maxSpinZoom - slowSpinZoom);
+          distancePerSecond *= zoomDif;
+        }
+        const center = map.current.getCenter();
+        center.lng -= distancePerSecond;
+        // Smoothly animate the map over one second.
+        // When this animation is complete, it calls a 'moveend' event.
+        map.current.easeTo({ center, duration: 1000, easing: (n) => n });
+      }
+    }
+
+    // Pause spinning on interaction
+    map.current.on("mousedown", () => {
+      userInteracting = true;
+    });
+
+    // Restart spinning the globe when interaction is complete
+    map.current.on("mouseup", () => {
+      userInteracting = false;
+      spinGlobe();
+    });
+
+    // These events account for cases where the mouse has moved
+    // off the map, so 'mouseup' will not be fired.
+    map.current.on("dragend", () => {
+      userInteracting = false;
+      spinGlobe();
+    });
+    map.current.on("pitchend", () => {
+      userInteracting = false;
+      spinGlobe();
+    });
+    map.current.on("rotateend", () => {
+      userInteracting = false;
+      spinGlobe();
+    });
+
+    // When animation is complete, start spinning if there is no ongoing interaction
+    map.current.on("moveend", () => {
+      spinGlobe();
     });
 
     // // inspect a cluster on click

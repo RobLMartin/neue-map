@@ -1,7 +1,9 @@
 import { useNavigate, useRouteLoaderData, useParams } from "@remix-run/react";
 
 export default function DataTable() {
-  const { dataset } = useRouteLoaderData<any>("routes/_app.$datasetId");
+  const { dataset } = useRouteLoaderData<any>(
+    "routes/_app.datasets.$datasetId"
+  );
   const { datasetId } = useParams();
   const navigate = useNavigate();
   if (!dataset?.data) {
@@ -18,13 +20,13 @@ export default function DataTable() {
 
   return (
     <table className="w-full">
-      <thead className="sticky top-0 left-0 dark:bg-neutral-800 bg-white shadow">
+      <thead className="sticky top-0 left-0 dark:bg-neutral-800 bg-neutral-100">
         <tr>
           {dataset.data.features.length > 0 &&
             Object.keys(dataset.data.features[0].properties).map((key) => (
               <th
                 key={key}
-                className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider border-b border-r last:border-r-0 dark:border-neutral-700"
+                className="px-6 py-4 text-left text-xs font-medium text-neutral-400 uppercase tracking-wider border-b border-r last:border-r-0 dark:border-neutral-700"
               >
                 {key}
               </th>
@@ -36,7 +38,7 @@ export default function DataTable() {
           <tr
             key={idx}
             onClick={() => handleNavigation(feature.geometry.coordinates)}
-            className="dark:hover:bg-neutral-800 hover:bg-gray-100 cursor-pointer transition-all ease-in-out duration-100"
+            className="dark:hover:bg-neutral-800 hover:bg-neutral-100 cursor-pointer transition-all ease-in-out duration-100"
           >
             {Object.values(feature.properties ?? {}).map(
               (value: any, valueIdx: number) => (
