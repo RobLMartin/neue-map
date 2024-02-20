@@ -1,101 +1,77 @@
-import { useState, useEffect } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useFetcher, useNavigate } from "@remix-run/react";
 import type { Dataset } from "@prisma/client";
+import useDragAndDrop from "~/hooks/useDragAndDrop";
 
 const DropZone = () => {
-  const fetcher = useFetcher();
-  const tabFetcher = useFetcher();
-  const [isDragging, setIsDragging] = useState(false);
+  const [uploadKey, setUploadKey] = useState(0);
+  const createDatasetfetcher = useFetcher();
+  const createTabFetcher = useFetcher();
   const navigate = useNavigate();
+
+  const handleFileDrop = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const result = e.target?.result;
+      if (result) {
+        createDatasetfetcher.submit(
+          { data: JSON.stringify(JSON.parse(result as string)) },
+          { method: "POST", action: "/dataset/create" }
+        );
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const { isDragging } = useDragAndDrop(handleFileDrop);
+
+  const createTabAndNavigate = useCallback(
+    (id?: number, name?: string) => {
+      if (!id || !name) return;
+      const formData = new FormData();
+      formData.append(
+        "tab",
+        JSON.stringify({ id, name, intent: "create-tab" })
+      );
+      createTabFetcher.submit(formData, {
+        method: "post",
+        action: "/",
+        navigate: false,
+      });
+      setUploadKey((prevKey: number) => prevKey + 1);
+      navigate(`/datasets/${id}`);
+    },
+    [createTabFetcher, navigate]
+  );
+
   useEffect(() => {
     if (
-      fetcher.state === "idle" &&
-      fetcher.data !== undefined &&
-      tabFetcher.data === undefined
+      createDatasetfetcher.state === "idle" &&
+      createDatasetfetcher.data &&
+      !createTabFetcher.data
     ) {
-      const data = fetcher.data as Partial<Dataset>;
-      if (data.id) {
-        const formData = new FormData();
-        formData.append("tab", JSON.stringify(data));
-        tabFetcher.submit(formData, {
-          method: "post",
-          action: "/",
-          navigate: false,
-        });
-        navigate(`/datasets/${data.id}`);
-      }
+      const { id, name } = createDatasetfetcher.data as Partial<Dataset>;
+      createTabAndNavigate(id, name);
+      createDatasetfetcher.data = null;
+      createTabFetcher.data = null;
     }
-  }, [fetcher, navigate, tabFetcher]);
-
-  useEffect(() => {
-    const handleDragEnter = (e: DragEvent) => {
-      if (
-        e.dataTransfer &&
-        e.dataTransfer.items &&
-        e.dataTransfer.items.length
-      ) {
-        setIsDragging(true);
-      }
-    };
-
-    const handleDragOver = (e: DragEvent) => {
-      e.preventDefault(); // This is crucial to prevent the browser from opening the file.
-      setIsDragging(true); // Maintain visibility as long as we're dragging over the app.
-    };
-
-    const handleFileDrop = (file: File) => {
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        const result = e.target?.result;
-        if (result) {
-          const data = JSON.parse(result as string);
-
-          fetcher.submit(
-            { data: JSON.stringify(data) },
-            {
-              method: "POST",
-              action: "/dataset/create",
-            }
-          );
-        }
-      };
-      reader.readAsText(file);
-    };
-
-    const handleDrop = (e: DragEvent) => {
-      e.preventDefault(); // Prevent the browser default of opening the file.
-      setIsDragging(false); // Hide the drop zone once the file is dropped.
-      if (e.dataTransfer?.files && e.dataTransfer.files[0]) {
-        const file = e.dataTransfer.files[0];
-        handleFileDrop(file);
-      }
-    };
-
-    // Bind events to the whole document to capture drag/drop anywhere
-    document.addEventListener("dragenter", handleDragEnter);
-    document.addEventListener("dragover", handleDragOver);
-    document.addEventListener("drop", handleDrop);
-
-    return () => {
-      document.removeEventListener("dragenter", handleDragEnter);
-      document.removeEventListener("dragover", handleDragOver);
-      document.removeEventListener("drop", handleDrop);
-    };
-  }, [fetcher]);
-
-  if (!isDragging) return null;
+  }, [createDatasetfetcher, createTabFetcher, createTabAndNavigate]);
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-      style={{ pointerEvents: "none" }} // Prevent the drop zone from capturing mouse events when visible.
-    >
-      <div
-        className="p-16 rounded dark:bg-neutral-900 bg-white shadow-lg"
-        style={{ pointerEvents: "auto" }} // Allow mouse events on the inner div to let the user drop the file.
-      >
-        <p>Drop your GeoJSON file here</p>
-      </div>
+    <div key={`key-${uploadKey}`}>
+      {isDragging ? (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          style={{ pointerEvents: "none" }}
+        >
+          <div
+            className="p-16 rounded dark:bg-neutral-900 bg-white shadow-lg"
+            style={{ pointerEvents: "auto" }}
+          >
+            <p>Drop your GeoJSON file here</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
