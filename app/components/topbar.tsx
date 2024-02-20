@@ -8,7 +8,7 @@ import DatasetTabs from "./dataset.tabs";
 const NavBar = () => {
   return (
     <div className="border dark:border-neutral-700 sticky top-0 left-0 right-0 z-50">
-      <div className="container mx-auto flex justify-between">
+      <div className="flex justify-between">
         <div className="flex flex-grow min-w-0">
           <div className="border-r dark:border-neutral-700 min-w-[77px]">
             <Link
