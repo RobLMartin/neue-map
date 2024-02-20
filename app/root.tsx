@@ -11,8 +11,7 @@ import {
 } from "@remix-run/react";
 import stylesheet from "tailwind.css";
 import "mapbox-gl/dist/mapbox-gl.css";
-import type { Dataset } from "@prisma/client";
-import { addOption, options, removeOption } from "~/utils/tab.storage";
+import { addTab, removeTabById, updateTabLabel } from "~/utils/tab.storage";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -21,31 +20,24 @@ export const links: LinksFunction = () => [
 
 export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
   const formData = await request.formData();
-  const intent = formData.get("intent") as string | null;
-  const tabString = formData.get("tab") as string | null;
-  const removeId = formData.get("id") as string | null;
+  const intent = formData.get("intent") as string;
 
-  if (intent === "delete" && removeId) {
-    const id = Number(removeId);
-    removeOption(id);
-    return 200;
+  if (intent === "delete-tab") {
+    const removeId = formData.get("id") as string;
+    removeTabById(removeId);
+  } else if (intent === "create-tab") {
+    const id = formData.get("id") as string;
+    const name = formData.get("name") as string;
+
+    addTab({ value: id!, label: name! });
+  } else if (intent === "update-tab") {
+    console.log("update-tab");
+    const id = formData.get("id") as string;
+    const newLabel = formData.get("name") as string;
+    updateTabLabel(id, newLabel);
   }
 
-  if (!tabString) {
-    return 200;
-  }
-
-  const tab = JSON.parse(tabString) as Partial<Dataset>;
-
-  const datasetExists = options.some(
-    (d: { value: string | number }) => d.value === tab.id
-  );
-
-  if (!datasetExists) {
-    addOption({ value: tab.id!, label: tab.name! });
-  }
-
-  return 200;
+  return null;
 };
 
 export default function App() {
