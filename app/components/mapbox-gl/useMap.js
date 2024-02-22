@@ -221,7 +221,7 @@ export default function useMap() {
       const properties = e.features[0].properties;
 
       // Dynamically create popup content based on feature properties
-      let popupContent = '<div class="rounded text-neutral-950">';
+      let popupContent = '<div class="rounded text-neutral-950 mt-5">';
       for (const [key, value] of Object.entries(properties)) {
         // Optionally, you can format the key to improve readability
         const formattedKey = key.replace(/([A-Z])/g, " $1").trim(); // Example: converts "issueDate" to "issue Date"
