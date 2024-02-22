@@ -1,7 +1,7 @@
 import { useParams } from "@remix-run/react";
 import NavItem from "./nav.item";
 import {
-  BarChartIcon,
+  // BarChartIcon,
   // UploadIcon,
   FileTextIcon,
   MagnifyingGlassIcon,
@@ -27,11 +27,11 @@ export default function Sidebar() {
           icon={<GlobeIcon height={28} width={28} />}
           title="Map"
         />
-        <NavItem
+        {/* <NavItem
           to={`/datasets/${datasetId}/charts`}
           icon={<BarChartIcon height={28} width={28} />}
           title="Charts"
-        />
+        /> */}
 
         {/* <NavItem
           to="/upload"
