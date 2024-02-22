@@ -29,11 +29,9 @@ const removeTabById = (value: string) => {
 };
 
 const updateTabLabel = (value: string, newLabel: string) => {
-  console.log("updateTabLabel");
   let tabs = fetchTabs();
   const updatedTabs = tabs.map((tab) => {
     if (tab.value === value) {
-      console.log("updateTabLabel this label");
       return { ...tab, label: newLabel };
     }
     return tab;

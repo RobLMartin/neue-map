@@ -31,9 +31,9 @@ export const clientAction = async ({ request }: ClientActionFunctionArgs) => {
 
     addTab({ value: id!, label: name! });
   } else if (intent === "update-tab") {
-    console.log("update-tab");
     const id = formData.get("id") as string;
     const newLabel = formData.get("name") as string;
+
     updateTabLabel(id, newLabel);
   }
 

@@ -35,7 +35,6 @@ const DatasetSelect = () => {
   useEffect(() => {
     // Trigger data loading if not already loading or loaded.
     if (uploadFetcher.state === "idle" && !uploadFetcher.data) {
-      console.log("Initiating fetch for datasets.");
       uploadFetcher.load("/dataset/find");
     }
 
